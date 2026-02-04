@@ -6,7 +6,6 @@ public enum Category {
     Utilities("Утилиты"),
     Other("Остальное"),
     Interface("Интерфейс"),
-    Gui("Гуи"),
     Theme("Темы");
 
     private final String name;

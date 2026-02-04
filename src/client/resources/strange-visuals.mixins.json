@@ -22,7 +22,11 @@
     "HandledScreenMixin",
     "HeldItemRendererMixin",
     "LivingEntityMixin",
-    "LightmapTextureManagerMixin"
+    "LightmapTextureManagerMixin",
+    "GameMenuScreenMixin",
+    "GameMenuScreenButtonsMixin",
+    "PlayerListEntryMixin",
+    "SpiderEntityModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

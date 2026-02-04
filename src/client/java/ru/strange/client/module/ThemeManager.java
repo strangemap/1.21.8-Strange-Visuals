@@ -29,6 +29,10 @@ public class ThemeManager {
         }
     }
 
+    public static void finishAnimation() {
+        animation = 1.0f;
+    }
+
     public static Theme getTheme() {
         return currentTheme;
     }

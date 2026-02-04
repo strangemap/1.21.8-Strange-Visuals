@@ -24,13 +24,20 @@ import static ru.strange.client.ui.clickgui.GuiScreen.scroll;
 public class GuiClient extends Screen implements Helper {
     public GuiClient() {
         super(Text.literal("Gui"));
-        GuiScreen.x = 960 / 2f - GuiScreen.width / 2;
-        GuiScreen.y = 520 / 2f - GuiScreen.height / 2;
         GuiScreen.width = 225;
         GuiScreen.height = 217;
         GuiScreen.categories = Category.values();
         GuiScreen.modules = Strange.get.manager.getType(GuiScreen.selectedCategories);
         GuiScreen.themes = Theme.values();
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        GuiScreen.width = 225;
+        GuiScreen.height = 217;
+        GuiScreen.x = this.width / 2f - GuiScreen.width / 2f;
+        GuiScreen.y = this.height / 2f - GuiScreen.height / 2f;
     }
 
     @Override

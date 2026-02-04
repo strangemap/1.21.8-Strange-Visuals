@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.BufferAllocator;
@@ -21,6 +22,7 @@ import org.joml.Matrix4f;
 import ru.strange.client.Strange;
 import ru.strange.client.event.EventInit;
 import ru.strange.client.event.impl.EventRender3D;
+import ru.strange.client.event.impl.EventScreen;
 import ru.strange.client.module.api.Category;
 import ru.strange.client.module.api.IModule;
 import ru.strange.client.module.api.Module;
@@ -52,6 +54,11 @@ public class Box extends Module {
 
     public Box() {
         addSettings(targets, colorSetting);
+    }
+
+    @EventInit
+    public void render2d(EventScreen e) {
+//        drawFovZone(e.drawContext());
     }
 
     @EventInit
@@ -87,28 +94,62 @@ public class Box extends Module {
         return false;
     }
 
+    private void drawFovZone(DrawContext ctx) {
+        int screenW = mc.getWindow().getScaledWidth();
+        int screenH = mc.getWindow().getScaledHeight();
+        if (screenW <= 0 || screenH <= 0) return;
+
+        float aspect = (float) screenW / (float) screenH;
+
+        var camera = mc.gameRenderer.getCamera();
+
+        float vFovDeg = (float) mc.gameRenderer.getFov(camera, mc.getRenderTickCounter().getDynamicDeltaTicks(), false);
+
+        float vFov = vFovDeg * MathHelper.RADIANS_PER_DEGREE;
+        float hFov = (float) (2.0 * Math.atan(Math.tan(vFov * 0.5) * aspect));
+
+        float zoneX = 150 * MathHelper.RADIANS_PER_DEGREE;
+        float zoneY = 100 * MathHelper.RADIANS_PER_DEGREE;
+
+        float width  = (float) (screenW * (Math.tan(zoneX * 0.5) / Math.tan(hFov * 0.5)));
+        float height = (float) (screenH * (Math.tan(zoneY * 0.5) / Math.tan(vFov * 0.5)));
+
+        width  = MathHelper.clamp(width,  2f, screenW);
+        height = MathHelper.clamp(height, 2f, screenH);
+
+        float x = screenW * 0.5f - width * 0.5f;
+        float y = screenH * 0.5f - height * 0.5f;
+
+        int color = 0x6600FF00;
+        RenderUtil.Rect.draw(ctx, x, y, width, height, color);
+    }
+
     private boolean isInFieldOfView(Entity entity, float partialTicks) {
         var camera = mc.gameRenderer.getCamera();
-        Vec3d cameraPos = camera.getPos();
+        Vec3d cam = camera.getPos();
 
-        double entityX = entity.lastRenderX + (entity.getX() - entity.lastRenderX) * partialTicks;
-        double entityY = entity.lastRenderY + (entity.getY() - entity.lastRenderY) * partialTicks + entity.getHeight() * 0.5;
-        double entityZ = entity.lastRenderZ + (entity.getZ() - entity.lastRenderZ) * partialTicks;
+        double ex = entity.lastRenderX + (entity.getX() - entity.lastRenderX) * partialTicks;
+        double ey = entity.lastRenderY + (entity.getY() - entity.lastRenderY) * partialTicks + entity.getHeight() * 0.5;
+        double ez = entity.lastRenderZ + (entity.getZ() - entity.lastRenderZ) * partialTicks;
 
-        Vec3d toEntity = new Vec3d(entityX - cameraPos.x, entityY - cameraPos.y, entityZ - cameraPos.z);
-        double distance = toEntity.length();
-        if (distance < 1e-6) return true;
+        double dx = ex - cam.x;
+        double dy = ey - cam.y;
+        double dz = ez - cam.z;
 
-        float yawRad = camera.getYaw() * MathHelper.RADIANS_PER_DEGREE;
-        float pitchRad = camera.getPitch() * MathHelper.RADIANS_PER_DEGREE;
-        double lookX = -MathHelper.sin(yawRad) * MathHelper.cos(pitchRad);
-        double lookY = -MathHelper.sin(pitchRad);
-        double lookZ = MathHelper.cos(yawRad) * MathHelper.cos(pitchRad);
+        double distXZ = Math.sqrt(dx * dx + dz * dz);
+        if (distXZ < 1e-6) return true;
 
-        double dot = (toEntity.x * lookX + toEntity.y * lookY + toEntity.z * lookZ) / distance;
-        float fovDegrees = mc.options.getFov().getValue();
-        float halfFovRad = (fovDegrees * 0.5f) * MathHelper.RADIANS_PER_DEGREE;
-        return dot >= MathHelper.cos(halfFovRad);
+        float targetYaw = (float)(MathHelper.atan2(dz, dx) * 180.0 / Math.PI) - 90f;
+        float targetPitch = (float)(-(MathHelper.atan2(dy, distXZ) * 180.0 / Math.PI));
+
+        float camYaw = camera.getYaw();
+        float camPitch = camera.getPitch();
+
+        float dyaw = MathHelper.wrapDegrees(targetYaw - camYaw);
+        float dpitch = MathHelper.wrapDegrees(targetPitch - camPitch);
+
+        return Math.abs(dyaw) <= 150 * 0.5f
+                && Math.abs(dpitch) <= 150 * 0.5f;
     }
 
     private boolean isVisibleThroughBlocks(Entity entity, float partialTicks) {

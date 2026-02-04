@@ -30,24 +30,14 @@ import java.awt.*;
 import java.util.List;
 
 public class RenderUtil implements Helper {
-
-    /** Returns true if the point (x, y, z) in world space is within the player's field of view. */
-    public static boolean isInFieldOfView(MinecraftClient mc, double x, double y, double z) {
-        if (mc.gameRenderer == null || mc.world == null) return true;
-        Camera camera = mc.gameRenderer.getCamera();
-        Vec3d cameraPos = camera.getPos();
-        Vec3d toPoint = new Vec3d(x - cameraPos.x, y - cameraPos.y, z - cameraPos.z);
-        double distance = toPoint.length();
-        if (distance < 1e-6) return true;
-        float yawRad = camera.getYaw() * net.minecraft.util.math.MathHelper.RADIANS_PER_DEGREE;
-        float pitchRad = camera.getPitch() * net.minecraft.util.math.MathHelper.RADIANS_PER_DEGREE;
-        double lookX = -net.minecraft.util.math.MathHelper.sin(yawRad) * net.minecraft.util.math.MathHelper.cos(pitchRad);
-        double lookY = -net.minecraft.util.math.MathHelper.sin(pitchRad);
-        double lookZ = net.minecraft.util.math.MathHelper.cos(yawRad) * net.minecraft.util.math.MathHelper.cos(pitchRad);
-        double dot = (toPoint.x * lookX + toPoint.y * lookY + toPoint.z * lookZ) / distance;
-        float fovDegrees = mc.options.getFov().getValue();
-        float halfFovRad = (fovDegrees * 0.5f) * net.minecraft.util.math.MathHelper.RADIANS_PER_DEGREE;
-        return dot >= net.minecraft.util.math.MathHelper.cos(halfFovRad);
+    public static void drawClientRect(DrawContext ctx, float x, float y, float width, float height) {
+        int color = ThemeManager.getTheme() == Theme.BLACK ? new Color(0xCC000000, true).getRGB() : ThemeManager.getTheme() == Theme.WHITE ? new Color(0xCCFFFFFF, true).getRGB() :
+                    ThemeManager.getTheme() == Theme.TRANSPARENT_BLACK ? new Color(0x99000000, true).getRGB() : ThemeManager.getTheme() == Theme.TRANSPARENT_WHITE ? new Color(0x99FFFFFF, true).getRGB() :
+                    ThemeManager.getTheme() == Theme.PURPLE ? new Color(0xB3FFCCE2, true).getRGB() : new Color(0xB3B2A4FF, true).getRGB();
+        if (ThemeManager.getTheme() != Theme.BLACK && ThemeManager.getTheme() != Theme.WHITE) {
+            RenderUtil.Blur.draw(ctx, x, y, width, height, 3, 10, new Color(255,255,255));
+        }
+        RenderUtil.Round.draw(ctx, x, y, width, height, 3, color);
     }
 
     public class Rect {
