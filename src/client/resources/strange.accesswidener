@@ -9,6 +9,7 @@ accessible field net/minecraft/client/gui/render/GuiRenderer$Draw textureSetup L
 accessible field net/minecraft/client/option/GameOptions sprintToggled Lnet/minecraft/client/option/SimpleOption;
 accessible field net/minecraft/client/gui/render/GuiRenderer$Draw scissorArea Lnet/minecraft/client/gui/ScreenRect;
 accessible method net/minecraft/client/gui/screen/ingame/HandledScreen getSlotAt (DD)Lnet/minecraft/screen/slot/Slot;
+accessible method net/minecraft/client/render/GameRenderer getFov (Lnet/minecraft/client/render/Camera;FZ)F
 accessible field net/minecraft/client/render/GameRenderer guiRenderer Lnet/minecraft/client/gui/render/GuiRenderer;
 accessible field net/minecraft/client/gui/render/GuiRenderer$Preparation mesh Lnet/minecraft/client/render/BuiltBuffer;
 accessible field net/minecraft/client/gui/render/GuiRenderer$Preparation pipeline Lcom/mojang/blaze3d/pipeline/RenderPipeline;

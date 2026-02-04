@@ -5,6 +5,7 @@ import ru.strange.client.Strange;
 import ru.strange.client.module.Theme;
 import ru.strange.client.module.ThemeManager;
 import ru.strange.client.module.api.Module;
+import ru.strange.client.ui.clickgui.GuiScreen;
 
 import java.io.File;
 
@@ -75,6 +76,9 @@ public final class Config implements ConfigUpdater {
                 String themeName = object.get("Theme").getAsString();
                 Theme theme = Theme.valueOf(themeName);
                 ThemeManager.setTheme(theme);
+                ThemeManager.finishAnimation();
+                GuiScreen.selectedTheme = theme;
+                GuiScreen.preSelectedTheme = theme;
                 System.out.println("[Config] Theme loaded: " + theme.getName());
             } catch (Exception e) {
                 System.out.println("[Config] Failed to load theme: " + e.getMessage());

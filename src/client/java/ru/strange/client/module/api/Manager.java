@@ -2,6 +2,7 @@ package ru.strange.client.module.api;
 
 import ru.strange.client.Strange;
 import ru.strange.client.module.impl.interfaces.SwingAnimation;
+import ru.strange.client.module.impl.interfaces.WaterMark;
 import ru.strange.client.module.impl.other.*;
 import ru.strange.client.module.impl.player.*;
 import ru.strange.client.module.impl.utilities.*;
@@ -46,6 +47,7 @@ public class Manager {
         module.add(new JumpCircle());
 
         //Interface
+        module.add(new WaterMark());
         module.add(new SwingAnimation());
 
         module.sort(Comparator.comparing(f -> f.getDisplayName().toLowerCase()));
