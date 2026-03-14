@@ -19,14 +19,13 @@ import java.util.ArrayList;
 public class KeyboardMixin {
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
-    private void onKey(long window, int key, int scancode, int action, int mods, CallbackInfo ci) {
-        if (action != GLFW.GLFW_PRESS) {
-            return;
-        }
+    private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+
+        if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) return;
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        EventKeyInput event = new EventKeyInput(window, key, scancode, action, mods);
+        EventKeyInput event = new EventKeyInput(window, key, scancode, action, modifiers);
         EventManager.call(event);
 
         if (event.isCancelled()) {
@@ -34,22 +33,16 @@ public class KeyboardMixin {
             return;
         }
 
-        if (mc.currentScreen != null) {
-            return;
-        }
+        if (mc.currentScreen != null) return;
 
-        if (key == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+        if (action == GLFW.GLFW_PRESS && key == GLFW.GLFW_KEY_RIGHT_SHIFT) {
             mc.setScreen(new GuiClient());
-
-            if (mc.mouse != null) {
-                mc.mouse.unlockCursor();
-            }
-
+            if (mc.mouse != null) mc.mouse.unlockCursor();
             ci.cancel();
             return;
         }
 
-        if (mc.player != null) {
+        if (mc.player != null && action == GLFW.GLFW_PRESS) {
             for (Module m : Strange.get.manager.getBind(key)) {
                 m.toggle();
             }

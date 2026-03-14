@@ -6,8 +6,8 @@ import ru.strange.client.module.impl.interfaces.WaterMark;
 import ru.strange.client.module.impl.other.*;
 import ru.strange.client.module.impl.player.*;
 import ru.strange.client.module.impl.utilities.*;
-import ru.strange.client.module.impl.helper.Test;
 import ru.strange.client.module.impl.world.BlockOutline;
+import ru.strange.client.module.impl.world.DashCubes;
 import ru.strange.client.module.impl.world.Svetych;
 import ru.strange.client.module.impl.world.WorldParticles;
 
@@ -32,6 +32,7 @@ public class Manager {
         module.add(new TapeMouse());
         module.add(new ItemScroller());
         module.add(new FTHelper());
+        module.add(new FreeLook());
 
         //Player
         module.add(new PlayerParticles());
@@ -39,12 +40,15 @@ public class Manager {
         module.add(new Box());
         module.add(new Trails());
         module.add(new TargetESP());
+        module.add(new HitBubble());
 
         //World
         module.add(new WorldParticles());
         module.add(new Svetych());
         module.add(new BlockOutline());
         module.add(new JumpCircle());
+        module.add(new DashCubes());
+        module.add(new GpsNavigator());
 
         //Interface
         module.add(new WaterMark());

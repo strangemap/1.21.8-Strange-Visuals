@@ -25,8 +25,8 @@ public class RPC implements Helper {
             thread = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     rpc.Discord_RunCallbacks();
-                    presence.details = "Version: v1";
-                    presence.state = "Release wow.";
+                    presence.details = "Version: vPisya";
+                    presence.state = "Конец короче хе.";
 
                     presence.button_label_1 = "Telegram";
                     presence.button_url_1 = "https://t.me/strangevisuals";

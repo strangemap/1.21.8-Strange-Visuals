@@ -20,7 +20,7 @@ import java.util.Map;
 
 @IModule(
         name = "Водяной знак",
-        description = "Кастомизация анимации руки",
+        description = "",
         category = Category.Interface,
         bind = -1
 )

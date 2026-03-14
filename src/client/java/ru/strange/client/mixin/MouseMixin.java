@@ -7,12 +7,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import ru.strange.client.event.EventManager;
+import ru.strange.client.event.impl.EventLook;
 import ru.strange.client.event.impl.EventMouseInput;
 import ru.strange.client.event.impl.EventMouseScroll;
 
 @Mixin(Mouse.class)
-public class MouseMixin {
+public abstract class MouseMixin {
 
     @Inject(method = "onMouseButton", at = @At("HEAD"), cancellable = true)
     private void onMouseButton(long window, int button, int action, int modifiers, CallbackInfo ci) {
@@ -37,5 +39,26 @@ public class MouseMixin {
         double mouseX = mc.mouse.getX();
         double mouseY = mc.mouse.getY();
         EventManager.call(new EventMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount));
+    }
+
+    @Inject(
+            method = "updateMouse",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;changeLookDirection(DD)V"
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD,
+            cancellable = true
+    )
+    private void onLook(double timeDelta, CallbackInfo ci, double d, double e, double f, double i, double j, int k) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client != null && client.player != null) {
+            EventLook event = new EventLook(d, e * k);
+            EventManager.call(event);
+            if (!event.isCancelled()) {
+                client.player.changeLookDirection(event.yaw, event.pitch);
+            }
+            ci.cancel();
+        }
     }
 }

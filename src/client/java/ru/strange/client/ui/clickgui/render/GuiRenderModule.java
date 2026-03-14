@@ -30,9 +30,7 @@ public class GuiRenderModule extends GuiScreen {
         float modulesWidth = 211;
         float modulesHeight = height - 64 - 7;
 
-        for (Category category : categories) {
-            if (category == selectedCategories) FontDraw.drawText(FontDraw.FontType.MEDIUM, ctx, category.getName(), x + 10, y + 42 + 13, 7, RenderUtil.ColorUtil.getTextColor(1,1));
-        }
+        FontDraw.drawText(FontDraw.FontType.MEDIUM, ctx, selectedCategories.getName(), x + 10, y + 42 + 13, 7, RenderUtil.ColorUtil.getTextColor(1,1));
 
         ctx.enableScissor(
                 (int) modulesX,
